@@ -1,0 +1,41 @@
+{
+    "name": "node-usaepay",
+    "version": "0.0.1",
+    "main": "./usaepay",
+    "description": "USAEpay API wrapper for Node.js",
+    "author": {
+        "name": "Starchup Inc",
+        "email": "geoffroy@starchup.com",
+        "url": "http://starchup.com"
+    },
+    "keywords": [
+        "starchup"
+    ],
+    "repository": {
+        "type": "git",
+        "url": "git+ssh://git@github.com/Starchup/node-usaepay.git"
+    },
+    "engines": {
+        "node": ">= 0.10"
+    },
+    "dependencies": {
+        "fast-xml-parser": "2.7.4",
+        "got": "9.6.0",
+        "request": "2.88.0",
+        "request-promise": "4.2.2"
+    },
+    "devDependencies": {
+        "mocha": "3.2.0",
+        "chai": "3.5.0",
+        "jshint": "2.9.4"
+    },
+    "scripts": {
+        "pretest": "jshint .",
+        "test": "mocha --timeout 5000"
+    },
+    "readmeFilename": "README.md",
+    "bugs": {
+        "url": "https://github.com/Starchup/node-usaepay/issues"
+    },
+    "homepage": "https://github.com/Starchup/node-usaepay"
+}
