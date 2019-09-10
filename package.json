@@ -1,6 +1,6 @@
 {
     "name": "node-usaepay",
-    "version": "0.0.1",
+    "version": "1.0.0",
     "main": "./usaepay",
     "description": "USAEpay API wrapper for Node.js",
     "author":
