@@ -23,9 +23,7 @@
     },
     "dependencies":
     {
-        "got": "9.6.0",
-        "request": "2.88.0",
-        "request-promise": "4.2.2"
+        "got": "9.6.0"
     },
     "devDependencies":
     {
