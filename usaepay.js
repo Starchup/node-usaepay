@@ -148,6 +148,7 @@ var usaepay = function (config)
 
             var data = {
                 'command': 'refund',
+                'amount': otions.amount,
                 'refnum': options.transactionForeignKey
             };
 
