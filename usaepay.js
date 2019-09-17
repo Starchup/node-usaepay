@@ -175,6 +175,182 @@ var usaepay = function (config)
         }
     };
 
+    self.Terminal = {
+        Create: function (options)
+        {
+            self.Util.validateArgument(options, 'options');
+            self.Util.validateArgument(options.name, 'options.name');
+
+            var data = {
+                'terminal_type': 'standalone',
+                'name': options.name
+            };
+
+            if (options.config)
+            {
+                data.terminal_config = options.config;
+            }
+            if (options.settings)
+            {
+                data.settings = options.settings;
+            }
+
+            return got.post(self.baseUrl + 'paymentengine/devices',
+            {
+                body: data,
+                json: true,
+                headers:
+                {
+                    'Authorization': 'Basic ' + self.authKey,
+                    'Content-Type': 'application/json'
+                }
+            }).then(function (res)
+            {
+                if (!res) self.Util.throwInvalidDataError(res);
+
+                if (!res.body || !res.body.key || !res.body.pairing_code)
+                {
+                    throw new Error('Terminal could not be created');
+                }
+
+                return {
+                    foreignKey: res.body.key,
+                    pairingCode: res.body.pairing_code
+                };
+            });
+        },
+        Delete: function (options)
+        {
+            self.Util.validateArgument(options, 'options');
+            self.Util.validateArgument(options.foreignKey, 'options.foreignKey');
+
+            return got.delete(self.baseUrl + 'paymentengine/devices/' + options.foreignKey,
+            {
+                json: true,
+                headers:
+                {
+                    'Authorization': 'Basic ' + self.authKey,
+                    'Content-Type': 'application/json'
+                }
+            }).then(function (res)
+            {
+                if (!res) self.Util.throwInvalidDataError(res);
+
+                if (!res.body)
+                {
+                    throw new Error('Terminal not removed');
+                }
+
+                return true;
+            });
+        },
+        Sale: function (options)
+        {
+            self.Util.validateArgument(options, 'options');
+            self.Util.validateArgument(options.amount, 'options.amount');
+            self.Util.validateArgument(options.foreignKey, 'options.foreignKey');
+
+            var data = {
+                'devicekey': options.foreignKey,
+                'amount': options.amount,
+                'command': 'sale'
+            };
+
+            return got.post(self.baseUrl + 'paymentengine/payrequests',
+            {
+                body: data,
+                json: true,
+                headers:
+                {
+                    'Authorization': 'Basic ' + self.authKey,
+                    'Content-Type': 'application/json'
+                }
+            }).then(function (res)
+            {
+                if (!res) self.Util.throwInvalidDataError(res);
+
+                if (!res.body || !res.body.key)
+                {
+                    throw new Error('Terminal transaction not created');
+                }
+
+                return res.body.key;
+            });
+        },
+        SaleStatus: function (options)
+        {
+            self.Util.validateArgument(options, 'options');
+            self.Util.validateArgument(options.foreignKey, 'options.foreignKey');
+
+            return got.get(self.baseUrl + 'paymentengine/payrequests/' + options.foreignKey,
+            {
+                json: true,
+                headers:
+                {
+                    'Authorization': 'Basic ' + self.authKey,
+                    'Content-Type': 'application/json'
+                }
+            }).then(function (res)
+            {
+                if (!res) self.Util.throwInvalidDataError(res);
+
+                if (!res.body || !res.body.key || !res.body.status)
+                {
+                    throw new Error('Terminal transaction not available');
+                }
+
+                var pendingStatuses = [
+                    'sending to device',
+                    'sent to device',
+                    'waiting for card dip',
+                    'changing interfaces',
+                    'customer see phone and tap again',
+                    'processing payment',
+                    'completing payment',
+                    'capturing signature'
+                ];
+
+                var successStatuses = ['transaction complete'];
+                // var errorStatuses = [
+                //     'signature capture error',
+                //     'canceled',
+                //     'transaction canceled',
+                //     'transaction failed',
+                //     'timeout',
+                //     'error'
+                // ];
+
+                if (res.body.transaction && res.body.transaction.result_code === 'E')
+                {
+                    return {
+                        status: 'error',
+                        message: res.body.transaction.error
+                    };
+                }
+
+                if (successStatuses.indexOf(res.body.status) > -1)
+                {
+                    return {
+                        status: 'success',
+                        transaction: res.body.transaction.refnum
+                    };
+                }
+                if (pendingStatuses.indexOf(res.body.status) > -1)
+                {
+                    return {
+                        status: 'pending',
+                        message: res.body.status
+                    };
+                }
+
+                return {
+                    status: 'error',
+                    message: res.body.status
+                };
+            });
+        }
+    };
+
     self.Util = {
         validateArgument: function (arg, name)
         {

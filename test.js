@@ -16,8 +16,6 @@ var cardForeignId, transactionForeignId;
 
 describe('Card Methods', function ()
 {
-    this.timeout(10000);
-
     var data = {
         cardNumber: '4111111111111111',
         exp: '02/20',
@@ -87,6 +85,83 @@ describe('Card Methods', function ()
         }).then(function (foreignId)
         {
             expect(foreignId).to.exist; // jshint ignore:line
+            done();
+        }).catch(done);
+    });
+});
+
+describe('Terminal Methods', function ()
+{
+    cardForeignId = null;
+    transactionForeignId = null;
+
+    it('should create a terminal on USAEpay', function (done)
+    {
+        USAEpay.Terminal.Create(
+        {
+            name: 'test'
+        }).then(function (res)
+        {
+            expect(res).to.exist; // jshint ignore:line
+            expect(res.foreignKey).to.exist; // jshint ignore:line
+            expect(res.pairingCode).to.exist; // jshint ignore:line
+
+            cardForeignId = res.foreignKey;
+
+            done();
+        }).catch(done);
+    });
+
+    it('should start a transaction on a terminal on USAEpay', function (done)
+    {
+        USAEpay.Terminal.Sale(
+        {
+            foreignKey: cardForeignId,
+            amount: 1
+        }).then(function (foreignId)
+        {
+            expect(foreignId).to.exist; // jshint ignore:line
+            transactionForeignId = foreignId;
+            done();
+        }).catch(done);
+    });
+
+    it('should get the status of a transaction on a terminal on USAEpay', function (done)
+    {
+        var transactionDone = false;
+
+        function checkTransactionStatus()
+        {
+            if (transactionDone) return done();
+
+            USAEpay.Terminal.SaleStatus(
+            {
+                foreignKey: transactionForeignId
+            }).then(function (res)
+            {
+                expect(res).to.exist; // jshint ignore:line
+                expect(res.status).to.exist; // jshint ignore:line
+
+                if (res.status === 'error') return done(res.message);
+
+                if (res.status === 'success') transactionDone = true;
+
+                checkTransactionStatus();
+
+            }).catch(done);
+        }
+
+        checkTransactionStatus();
+    });
+
+    it('should delete a terminal on USAEpay', function (done)
+    {
+        USAEpay.Terminal.Delete(
+        {
+            foreignKey: cardForeignId
+        }).then(function (result)
+        {
+            expect(result).to.equal(true); // jshint ignore:line
             done();
         }).catch(done);
     });
