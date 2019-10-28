@@ -328,6 +328,14 @@ var usaepay = function (config)
                     };
                 }
 
+                if (res.body.transaction && res.body.transaction.result_code === 'D')
+                {
+                    return {
+                        status: 'error',
+                        message: res.body.transaction.error
+                    };
+                }
+
                 if (successStatuses.indexOf(res.body.status) > -1)
                 {
                     return {
