@@ -65,12 +65,12 @@ var usaepay = function (config)
                     throw new Error('Card not approved');
                 }
 
-                if (!res.body.savedcard || !res.body.savedcard.cardnumber)
+                if (!res.body.savedcard || !res.body.savedcard.key)
                 {
                     throw new Error('Card could not be saved');
                 }
 
-                return res.body.savedcard.cardnumber;
+                return res.body.savedcard.key;
             });
         },
         Sale: function (options)
