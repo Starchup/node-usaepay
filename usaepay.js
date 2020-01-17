@@ -88,6 +88,10 @@ var usaepay = function (config)
                 },
                 'amount': options.amount
             };
+            if (options.cardholderName)
+            {
+                data.creditcard.cardholder = options.cardholderName;
+            }
 
             return got.post(self.baseUrl + 'transactions',
             {
