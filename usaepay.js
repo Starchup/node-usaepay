@@ -70,7 +70,9 @@ var usaepay = function (config)
                     throw new Error('Card could not be saved');
                 }
 
-                return res.body.savedcard.key;
+                return {
+                    foreignId: res.body.savedcard.key
+                };
             });
         },
         Sale: function (options)
