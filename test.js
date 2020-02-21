@@ -28,10 +28,18 @@ describe('Card Methods', function ()
 
     it('should create a credit card on USAEpay', function (done)
     {
-        USAEpay.Card.Create(data).then(function (foreignId)
+        USAEpay.Card.Create(data).then(function (cardData)
         {
-            expect(foreignId).to.exist; // jshint ignore:line
-            cardForeignId = foreignId;
+            /* jshint ignore:start */
+            expect(cardData).to.exist;
+            expect(cardData.foreignId).to.exist;
+            expect(cardData.cardType).to.exist;
+            expect(cardData.maskedNumber).to.exist;
+            expect(cardData.cardHolderName).to.exist;
+            /* jshint ignore:end */
+
+            cardForeignId = cardData.foreignId;
+
             done();
         }).catch(done);
     });
@@ -57,10 +65,13 @@ describe('Card Methods', function ()
         {
             foreignKey: cardForeignId,
             amount: 1
-        }).then(function (foreignId)
+        }).then(function (saleData)
         {
-            expect(foreignId).to.exist; // jshint ignore:line
-            transactionForeignId = foreignId;
+            expect(saleData).to.exist; // jshint ignore:line
+            expect(saleData.foreignId).to.exist; // jshint ignore:line
+
+            transactionForeignId = saleData.foreignId;
+
             done();
         }).catch(done);
     });
@@ -70,9 +81,11 @@ describe('Card Methods', function ()
         USAEpay.Card.Void(
         {
             transactionForeignKey: transactionForeignId
-        }).then(function (foreignId)
+        }).then(function (voidData)
         {
-            expect(foreignId).to.exist; // jshint ignore:line
+            expect(voidData).to.exist; // jshint ignore:line
+            expect(voidData.foreignId).to.exist; // jshint ignore:line
+
             done();
         }).catch(done);
     });
@@ -82,9 +95,11 @@ describe('Card Methods', function ()
         USAEpay.Card.Refund(
         {
             transactionForeignKey: transactionForeignId
-        }).then(function (foreignId)
+        }).then(function (refundData)
         {
-            expect(foreignId).to.exist; // jshint ignore:line
+            expect(refundData).to.exist; // jshint ignore:line
+            expect(refundData.foreignId).to.exist; // jshint ignore:line
+
             done();
         }).catch(done);
     });

@@ -71,7 +71,10 @@ var usaepay = function (config)
                 }
 
                 return {
-                    foreignId: res.body.savedcard.key
+                    foreignId: res.body.savedcard.key,
+                    cardType: res.body.savedcard.type,
+                    maskedNumber: res.body.savedcard.cardnumber,
+                    cardHolderName: res.body.creditcard ? res.body.creditcard.cardholder : data.creditcard.cardholder
                 };
             });
         },
@@ -113,7 +116,10 @@ var usaepay = function (config)
                     throw new Error('Transaction not approved');
                 }
 
-                return res.body.refnum;
+                return {
+                    foreignId: res.body.refnum,
+                    amount: res.body.auth_amount
+                };
             });
         },
         Void: function (options)
@@ -144,7 +150,9 @@ var usaepay = function (config)
                     throw new Error('Transaction not voided');
                 }
 
-                return res.body.refnum;
+                return {
+                    foreignId: res.body.refnum
+                };
             });
         },
         Refund: function (options)
@@ -154,7 +162,7 @@ var usaepay = function (config)
 
             var data = {
                 'command': 'refund',
-                'amount': otions.amount,
+                'amount': options.amount,
                 'refnum': options.transactionForeignKey
             };
 
@@ -176,7 +184,9 @@ var usaepay = function (config)
                     throw new Error('Transaction not refunded');
                 }
 
-                return res.body.refnum;
+                return {
+                    foreignId: res.body.refnum
+                };
             });
         }
     };
