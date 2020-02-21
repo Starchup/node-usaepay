@@ -185,7 +185,8 @@ var usaepay = function (config)
                 }
 
                 return {
-                    foreignId: res.body.refnum
+                    foreignId: res.body.refnum,
+                    amount: options.amount
                 };
             });
         }
