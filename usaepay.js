@@ -49,8 +49,7 @@ var usaepay = function (config)
 
             return got.post(self.baseUrl + 'transactions',
             {
-                body: data,
-                json: true,
+                body: JSON.stringify(data),
                 headers:
                 {
                     'Authorization': 'Basic ' + self.authKey,
@@ -100,8 +99,7 @@ var usaepay = function (config)
 
             return got.post(self.baseUrl + 'transactions',
             {
-                body: data,
-                json: true,
+                body: JSON.stringify(data),
                 headers:
                 {
                     'Authorization': 'Basic ' + self.authKey,
@@ -134,8 +132,7 @@ var usaepay = function (config)
 
             return got.post(self.baseUrl + 'transactions',
             {
-                body: data,
-                json: true,
+                body: JSON.stringify(data),
                 headers:
                 {
                     'Authorization': 'Basic ' + self.authKey,
@@ -168,8 +165,7 @@ var usaepay = function (config)
 
             return got.post(self.baseUrl + 'transactions',
             {
-                body: data,
-                json: true,
+                body: JSON.stringify(data),
                 headers:
                 {
                     'Authorization': 'Basic ' + self.authKey,
@@ -214,8 +210,7 @@ var usaepay = function (config)
 
             return got.post(self.baseUrl + 'paymentengine/devices',
             {
-                body: data,
-                json: true,
+                body: JSON.stringify(data),
                 headers:
                 {
                     'Authorization': 'Basic ' + self.authKey,
@@ -243,7 +238,6 @@ var usaepay = function (config)
 
             return got.delete(self.baseUrl + 'paymentengine/devices/' + options.foreignKey,
             {
-                json: true,
                 headers:
                 {
                     'Authorization': 'Basic ' + self.authKey,
@@ -275,8 +269,7 @@ var usaepay = function (config)
 
             return got.post(self.baseUrl + 'paymentengine/payrequests',
             {
-                body: data,
-                json: true,
+                body: JSON.stringify(data),
                 headers:
                 {
                     'Authorization': 'Basic ' + self.authKey,
@@ -301,7 +294,6 @@ var usaepay = function (config)
 
             return got.get(self.baseUrl + 'paymentengine/payrequests/' + options.foreignKey,
             {
-                json: true,
                 headers:
                 {
                     'Authorization': 'Basic ' + self.authKey,
