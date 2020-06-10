@@ -49,8 +49,7 @@ var usaepay = function (config)
 
             return got.post(self.baseUrl + 'transactions',
             {
-                body: data,
-                json: true,
+                json: data,
                 headers:
                 {
                     'Authorization': 'Basic ' + self.authKey,
@@ -60,21 +59,28 @@ var usaepay = function (config)
             {
                 if (!res) self.Util.throwInvalidDataError(res);
 
-                if (!res.body || res.body.result_code !== 'A')
+                if (!res.body)
+                {
+                    throw new Error('Card could not be created');
+                }
+
+                var result = JSON.parse(res.body);
+
+                if (result.result_code !== 'A')
                 {
                     throw new Error('Card not approved');
                 }
 
-                if (!res.body.savedcard || !res.body.savedcard.key)
+                if (!result.savedcard || !result.savedcard.key)
                 {
                     throw new Error('Card could not be saved');
                 }
 
                 return {
-                    foreignId: res.body.savedcard.key,
-                    cardType: res.body.savedcard.type,
-                    maskedNumber: res.body.savedcard.cardnumber,
-                    cardHolderName: res.body.creditcard ? res.body.creditcard.cardholder : data.creditcard.cardholder
+                    foreignId: result.savedcard.key,
+                    cardType: result.savedcard.type,
+                    maskedNumber: result.savedcard.cardnumber,
+                    cardHolderName: result.creditcard ? result.creditcard.cardholder : result.creditcard.cardholder
                 };
             });
         },
@@ -100,8 +106,7 @@ var usaepay = function (config)
 
             return got.post(self.baseUrl + 'transactions',
             {
-                body: data,
-                json: true,
+                json: data,
                 headers:
                 {
                     'Authorization': 'Basic ' + self.authKey,
@@ -111,14 +116,21 @@ var usaepay = function (config)
             {
                 if (!res) self.Util.throwInvalidDataError(res);
 
-                if (!res.body || res.body.result_code !== 'A' || !res.body.refnum)
+                if (!res.body)
+                {
+                    throw new Error('Transaction could not be created');
+                }
+
+                var result = JSON.parse(res.body);
+
+                if (result.result_code !== 'A' || !result.refnum)
                 {
                     throw new Error('Transaction not approved');
                 }
 
                 return {
-                    foreignId: res.body.refnum,
-                    amount: res.body.auth_amount
+                    foreignId: result.refnum,
+                    amount: result.auth_amount
                 };
             });
         },
@@ -134,8 +146,7 @@ var usaepay = function (config)
 
             return got.post(self.baseUrl + 'transactions',
             {
-                body: data,
-                json: true,
+                json: data,
                 headers:
                 {
                     'Authorization': 'Basic ' + self.authKey,
@@ -145,13 +156,20 @@ var usaepay = function (config)
             {
                 if (!res) self.Util.throwInvalidDataError(res);
 
-                if (!res.body || res.body.result_code !== 'A' || !res.body.refnum)
+                if (!res.body)
+                {
+                    throw new Error('Transaction could not be voided');
+                }
+
+                var result = JSON.parse(res.body);
+
+                if (result.result_code !== 'A' || !result.refnum)
                 {
                     throw new Error('Transaction not voided');
                 }
 
                 return {
-                    foreignId: res.body.refnum
+                    foreignId: result.refnum
                 };
             });
         },
@@ -168,8 +186,7 @@ var usaepay = function (config)
 
             return got.post(self.baseUrl + 'transactions',
             {
-                body: data,
-                json: true,
+                json: data,
                 headers:
                 {
                     'Authorization': 'Basic ' + self.authKey,
@@ -179,13 +196,20 @@ var usaepay = function (config)
             {
                 if (!res) self.Util.throwInvalidDataError(res);
 
-                if (!res.body || res.body.result_code !== 'A' || !res.body.refnum)
+                if (!res.body)
+                {
+                    throw new Error('Transaction could not be refunded');
+                }
+
+                var result = JSON.parse(res.body);
+
+                if (result.result_code !== 'A' || !result.refnum)
                 {
                     throw new Error('Transaction not refunded');
                 }
 
                 return {
-                    foreignId: res.body.refnum,
+                    foreignId: result.refnum,
                     amount: options.amount
                 };
             });
@@ -214,8 +238,7 @@ var usaepay = function (config)
 
             return got.post(self.baseUrl + 'paymentengine/devices',
             {
-                body: data,
-                json: true,
+                json: data,
                 headers:
                 {
                     'Authorization': 'Basic ' + self.authKey,
@@ -225,14 +248,21 @@ var usaepay = function (config)
             {
                 if (!res) self.Util.throwInvalidDataError(res);
 
-                if (!res.body || !res.body.key || !res.body.pairing_code)
+                if (!res.body)
+                {
+                    throw new Error('Terminal could not be created');
+                }
+
+                var result = JSON.parse(res.body);
+
+                if (!result.key || !result.pairing_code)
                 {
                     throw new Error('Terminal could not be created');
                 }
 
                 return {
-                    foreignKey: res.body.key,
-                    pairingCode: res.body.pairing_code
+                    foreignKey: result.key,
+                    pairingCode: result.pairing_code
                 };
             });
         },
@@ -243,7 +273,6 @@ var usaepay = function (config)
 
             return got.delete(self.baseUrl + 'paymentengine/devices/' + options.foreignKey,
             {
-                json: true,
                 headers:
                 {
                     'Authorization': 'Basic ' + self.authKey,
@@ -275,8 +304,7 @@ var usaepay = function (config)
 
             return got.post(self.baseUrl + 'paymentengine/payrequests',
             {
-                body: data,
-                json: true,
+                json: data,
                 headers:
                 {
                     'Authorization': 'Basic ' + self.authKey,
@@ -286,12 +314,19 @@ var usaepay = function (config)
             {
                 if (!res) self.Util.throwInvalidDataError(res);
 
-                if (!res.body || !res.body.key)
+                if (!res.body)
+                {
+                    throw new Error('Terminal transaction could not be created');
+                }
+
+                var result = JSON.parse(res.body);
+
+                if (!result || !result.key)
                 {
                     throw new Error('Terminal transaction not created');
                 }
 
-                return res.body.key;
+                return result.key;
             });
         },
         SaleStatus: function (options)
@@ -301,7 +336,6 @@ var usaepay = function (config)
 
             return got.get(self.baseUrl + 'paymentengine/payrequests/' + options.foreignKey,
             {
-                json: true,
                 headers:
                 {
                     'Authorization': 'Basic ' + self.authKey,
@@ -311,7 +345,14 @@ var usaepay = function (config)
             {
                 if (!res) self.Util.throwInvalidDataError(res);
 
-                if (!res.body || !res.body.key || !res.body.status)
+                if (!res.body)
+                {
+                    throw new Error('Terminal transaction not available');
+                }
+
+                var result = JSON.parse(res.body);
+
+                if (!result || !result.key || !result.status)
                 {
                     throw new Error('Terminal transaction not available');
                 }
@@ -337,40 +378,40 @@ var usaepay = function (config)
                 //     'error'
                 // ];
 
-                if (res.body.transaction && res.body.transaction.result_code === 'E')
+                if (result.transaction && result.transaction.result_code === 'E')
                 {
                     return {
                         status: 'error',
-                        message: res.body.transaction.error
+                        message: result.transaction.error
                     };
                 }
 
-                if (res.body.transaction && res.body.transaction.result_code === 'D')
+                if (result.transaction && result.transaction.result_code === 'D')
                 {
                     return {
                         status: 'error',
-                        message: res.body.transaction.error
+                        message: result.transaction.error
                     };
                 }
 
-                if (successStatuses.indexOf(res.body.status) > -1)
+                if (successStatuses.indexOf(result.status) > -1)
                 {
                     return {
                         status: 'success',
-                        transaction: res.body.transaction.refnum
+                        transaction: result.transaction.refnum
                     };
                 }
-                if (pendingStatuses.indexOf(res.body.status) > -1)
+                if (pendingStatuses.indexOf(result.status) > -1)
                 {
                     return {
                         status: 'pending',
-                        message: res.body.status
+                        message: result.status
                     };
                 }
 
                 return {
                     status: 'error',
-                    message: res.body.status
+                    message: result.status
                 };
             });
         }

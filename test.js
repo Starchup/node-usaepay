@@ -18,7 +18,7 @@ describe('Card Methods', function ()
 {
     var data = {
         cardNumber: '4111111111111111',
-        exp: '02/20',
+        exp: '07/20',
         cvv: '232',
         firstName: 'Geoffroy',
         lastName: 'Lesage',
@@ -78,9 +78,19 @@ describe('Card Methods', function ()
 
     it('should void a credit card on USAEpay', function (done)
     {
-        USAEpay.Card.Void(
+        USAEpay.Card.Sale(
         {
-            transactionForeignKey: transactionForeignId
+            foreignKey: cardForeignId,
+            amount: 2
+        }).then(function (saleData)
+        {
+            expect(saleData).to.exist; // jshint ignore:line
+            expect(saleData.foreignId).to.exist; // jshint ignore:line
+
+            return USAEpay.Card.Void(
+            {
+                transactionForeignKey: saleData.foreignId
+            });
         }).then(function (voidData)
         {
             expect(voidData).to.exist; // jshint ignore:line
@@ -92,9 +102,19 @@ describe('Card Methods', function ()
 
     it('should refund a credit card on USAEpay', function (done)
     {
-        USAEpay.Card.Refund(
+        USAEpay.Card.Sale(
         {
-            transactionForeignKey: transactionForeignId
+            foreignKey: cardForeignId,
+            amount: 3
+        }).then(function (saleData)
+        {
+            expect(saleData).to.exist; // jshint ignore:line
+            expect(saleData.foreignId).to.exist; // jshint ignore:line
+
+            return USAEpay.Card.Refund(
+            {
+                transactionForeignKey: saleData.foreignId
+            });
         }).then(function (refundData)
         {
             expect(refundData).to.exist; // jshint ignore:line
