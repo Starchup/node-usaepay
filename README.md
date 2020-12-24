@@ -5,9 +5,13 @@ USAEpay API wrapper for Node.js, fully promisified
 ## Functionality
 * Card Not Present (`transactions` API)
 	* Card tokenization
+		* Statuses accepted: `A`
 	* Sale with card token
+		* Statuses accepted: `A`
 	* Void sale
+		* Statuses accepted: `A`
 	* Refund amount
+		* Statuses accepted: `A`
  * Card Present (`paymentengine` API)
 	 * Create a Terminal and get a pairing code from USAEPay
 	 * Delete a Terminal
